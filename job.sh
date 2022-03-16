@@ -58,4 +58,8 @@ run_ssh "podman exec \
         -e TOOLS_MOUNT="${TOOLS_MOUNT}" \
         -e BUILD_MOLECULE_SLAVE_SSHD_PORT="${BUILD_MOLECULE_SLAVE_SSHD_PORT}" \
         -e PROJECT_DOWNSTREAM_NAME="${PROJECT_DOWNSTREAM_NAME}" \
+        -e VBE_EXTENSION="${VBE_EXTENSION}" \
+        -e VBE_REPOSITORY_NAMES="${VBE_REPOSITORY_NAMES}" \
+        -e VBE_CHANNELS="${VBE_CHANNELS}" \
+        -e VBE_LOG_FILE="${VBE_LOG_FILE}" \
         -ti ${CONTAINER_NAME} '${BUILD_SCRIPT}' ${@}" | removeColorsControlCharactersFromOutput
