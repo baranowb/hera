@@ -2,6 +2,8 @@
 set +u
 readonly PARENT_JOB_NAME=${PARENT_JOB_NAME}
 readonly PARENT_JOB_BUILD_ID=${PARENT_JOB_BUILD_ID}
+readonly PARENT_CORE_JOB_NAME=${PARENT_CORE_JOB_NAME}
+readonly PARENT_CORE_JOB_BUILD_ID=${PARENT_CORE_JOB_BUILD_ID}
 readonly BUILD_PODMAN_IMAGE=${BUILD_PODMAN_IMAGE:-'localhost/automatons'}
 readonly JENKINS_HOME_DIR=${JENKINS_HOME_DIR:-'/home/jenkins/'}
 readonly JENKINS_CONTAINER_HOME_DIR=${JENKINS_CONTAINER_HOME_DIR:-'/var/jenkins_home/'}
@@ -28,6 +30,17 @@ add_parent_volume_if_provided() {
       echo "-v '${JENKINS_HOME_DIR}/jobs/${PARENT_JOB_NAME}/builds/${PARENT_JOB_BUILD_ID}/archive:/parent_job/:ro'"
     else
       echo "Something is wrong PARENT_JOB_NAME: ${PARENT_JOB_NAME} was provided, but not PARENT_JOB_BUILD_ID, abort."
+      exit 1
+    fi
+  fi
+}
+
+add_parent_core_volume_if_provided() {
+  if [ -n "${PARENT_CORE_JOB_NAME}" ]; then
+    if [ -n "${PARENT_CORE_JOB_BUILD_ID}" ]; then
+      echo "-v '${JENKINS_HOME_DIR}/jobs/${PARENT_CORE_JOB_NAME}/builds/${PARENT_CORE_JOB_BUILD_ID}/archive:/parent_core_job/:ro'"
+    else
+      echo "Something is wrong PARENT_JOB_NAME: ${PARENT_CORE_JOB_NAME} was provided, but not PARENT_CORE_JOB_BUILD_ID, abort."
       exit 1
     fi
   fi
@@ -97,7 +110,7 @@ readonly CONTAINER_COMMAND=${CONTAINER_COMMAND:-"${WORKSPACE}/hera/wait.sh"}
 run_ssh "podman run \
             --name "${CONTAINER_TO_RUN_NAME}" $(container_user_if_enabled) \
             --add-host=${CONTAINER_SERVER_HOSTNAME}:${CONTAINER_SERVER_IP}  \
-            --rm $(add_parent_volume_if_provided) $(privileged_if_enabled) $(systemd_if_enabled) $(cgroup_mount_if_enabled) \
+            --rm $(add_parent_volume_if_provided) $(add_parent_core_volume_if_provided) $(privileged_if_enabled) $(systemd_if_enabled) $(cgroup_mount_if_enabled) \
             --workdir ${WORKSPACE} $(add_ports_if_provided) \
             -v "${JOB_DIR}":${WORKSPACE}:rw $(mount_tools_if_provided)\
             -v "${JENKINS_ACCOUNT_DIR}/.ssh/":/var/jenkins_home/.ssh/:ro \

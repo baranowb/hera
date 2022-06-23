@@ -45,6 +45,8 @@ run_ssh "podman exec $(env_file_if_enabled) \
         -e JOB_NAME="${JOB_NAME}" \
         -e PARENT_JOB_NAME="${PARENT_JOB_NAME}" \
         -e PARENT_JOB_BUILD_ID="${PARENT_JOB_BUILD_ID}" \
+        -e PARENT_CORE_JOB_NAME="${PARENT_CORE_JOB_NAME}" \
+        -e PARENT_CORE_JOB_BUILD_ID="${PARENT_CORE_JOB_BUILD_ID}" \
         -e WORKSPACE="${WORKSPACE}" \
         -e WORKDIR="${WORKDIR}" \
         -e HARMONIA_SCRIPT="${HARMONIA_SCRIPT}" \
